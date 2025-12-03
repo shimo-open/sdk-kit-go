@@ -6,27 +6,43 @@ import (
 	"github.com/gotomicro/ego/client/ehttp"
 )
 
-// 获取导入进度
-// https://open.shimo.im/docs/06API-document/interface-description/file-operation#import-progress-v1
-
+// GetImportProgReq contains parameters for getting import progress.
+// GetImportProgReq 包含获取导入进度的参数。
+// API Doc: https://open.shimo.im/docs/06API-document/interface-description/file-operation#import-progress-v1
 type GetImportProgReq struct {
 	Metadata
+	// TaskId is the import task identifier.
+	// TaskId 是导入任务标识符。
 	TaskId string
 }
 
+// GetImportProgRes contains the response for getting import progress.
+// GetImportProgRes 包含获取导入进度的响应。
 type GetImportProgRes struct {
 	rawRes
-	Status  int               `json:"status"`  // 导入状态，非零值表示异常
-	Message string            `json:"message"` // 导入异常时的提示信息
-	Data    GetImportProgData `json:"data"`
+	// Status is the import status (non-zero indicates error).
+	// Status 是导入状态（非零值表示异常）。
+	Status int `json:"status"`
+	// Message is the error message when import fails.
+	// Message 是导入失败时的提示信息。
+	Message string `json:"message"`
+	// Data contains the import progress data.
+	// Data 包含导入进度数据。
+	Data GetImportProgData `json:"data"`
 }
 
+// GetImportProgData contains the import progress data.
+// GetImportProgData 包含导入进度数据。
 type GetImportProgData struct {
-	Progress int `json:"progress"` // 导入进度百分比，为 100 时表示导入完成
+	// Progress is the import progress percentage (100 means complete).
+	// Progress 是导入进度百分比（100 表示完成）。
+	Progress int `json:"progress"`
 }
 
+// NewGetImportProgressApi creates a new API config for getting import progress.
+// NewGetImportProgressApi 创建用于获取导入进度的 API 配置。
 func NewGetImportProgressApi(cli *ehttp.Component, ss SignatureSigner, params GetImportProgReq) *APIConf {
-	sign := ss.Sign(expire4m, ScopeDefault)
+	sign := ss.Sign(ExpireLong, ScopeDefault)
 	return &APIConf{
 		ss:     ss,
 		Client: cli,
@@ -45,8 +61,10 @@ func NewGetImportProgressApi(cli *ehttp.Component, ss SignatureSigner, params Ge
 	}
 }
 
+// NewGetImportV2ProgressApi creates a new API config for getting import progress using v2 API.
+// NewGetImportV2ProgressApi 创建用于使用 v2 接口获取导入进度的 API 配置。
 func NewGetImportV2ProgressApi(cli *ehttp.Component, ss SignatureSigner, params GetImportProgReq) *APIConf {
-	sign := ss.Sign(expire4m, ScopeDefault)
+	sign := ss.Sign(ExpireLong, ScopeDefault)
 	extra := map[string]string{
 		"Content-Type": "application/json",
 	}

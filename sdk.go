@@ -1,4 +1,4 @@
-package sdkkit
+package sdk
 
 import (
 	"context"
@@ -21,8 +21,6 @@ type Manager struct {
 	httpClient *ehttp.Component
 	ss         api.SignatureSigner
 }
-
-type TokenSigner = api.TokenSigner
 
 // Option defines a function type for configuring Manager.
 // Option 定义用于配置 Manager 的函数类型。

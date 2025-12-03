@@ -1,15 +1,13 @@
-package sdkkit
+package sdk
 
 import (
 	"crypto/md5"
-	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
 	"io"
 	"mime/multipart"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"time"
 
@@ -26,15 +24,8 @@ func GenFileName(fileType FileType) string {
 	return time.Now().Format("2006-01-02 15:04:05") + "-" + fileType.String()
 }
 
-// GetHashUserUuid generates a SHA256 hash of the user ID
-func GetHashUserUuid(userId int64) string {
-	hasher := sha256.New()
-	hasher.Write([]byte(strconv.FormatInt(userId, 10)))
-	return hex.EncodeToString(hasher.Sum(nil))
-}
-
-// GenerateUserFileUUID generates a unique file UUID based on user ID and file type
-func GenerateUserFileUUID(userId string, fileType string) string {
+// GenUserFileUUID generates a unique file UUID based on user ID and file type
+func GenUserFileUUID(userId string, fileType string) string {
 	// Concatenate userId and fileType
 	input := userId + "_" + fileType
 	// Use MD5 to produce a fixed 16-byte UUID from the combined string
@@ -53,17 +44,17 @@ const (
 	TargetBase   int32 = 62
 )
 
-var GMP = make([]rune, 256, 256)
+var gmp = make([]rune, 256, 256)
 var lookup = make([]rune, 256, 256)
 
 func init() {
 	for idx, s := range EncodeCharset {
-		GMP[idx] = s
+		gmp[idx] = s
 	}
 
 	var i int32 = 0
 	for ; i < 256; i++ {
-		lookup[GMP[i]] = i & 0x00FF
+		lookup[gmp[i]] = i & 0x00FF
 	}
 }
 
@@ -79,7 +70,7 @@ func getBytes(input string) []rune {
 
 func encode(input []rune) []rune {
 	indices := convert(input, StandardBase, TargetBase)
-	return translate(indices, GMP)
+	return translate(indices, gmp)
 }
 
 func decode(input []rune) []rune {

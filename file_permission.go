@@ -1,4 +1,4 @@
-package sdkkit
+package sdk
 
 type Permission string
 

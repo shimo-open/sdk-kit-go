@@ -23,41 +23,66 @@ const (
 	// HeaderWebofficeUserUuid controller user info cache
 	HeaderWebofficeUserUuid = "X-Weboffice-User-Uuid"
 
-	// ME represents the current user in API requests
-	ME = "me"
-	// ANONYMOUS is the user ID for anonymous users
-	ANONYMOUS = -1
-	// ANONYMOUSTOKEN is the token used for anonymous users
-	ANONYMOUSTOKEN = "pseudonymoustoken"
+	// Anonymous is the user ID for anonymous users
+	Anonymous = -1
+	// AnonymousToken is the token used for anonymous users
+	AnonymousToken = "pseudonymoustoken"
 )
 
+// Expiration duration constants for signature.
+// 签名过期时间常量。
 const (
-	expire4m  = 4 * time.Minute
-	expire24h = 24 * time.Hour
+	// ExpireShort is the long expiration duration (24 hours).
+	// ExpireShort 是长过期时间（24 小时）。
+	ExpireShort = 4 * time.Minute
+	// ExpireLong is the short expiration duration (4 minutes).
+	// ExpireLong 是短过期时间（4 分钟）。
+	ExpireLong = 24 * time.Hour
 )
 
+// Scope represents the scope type for signature.
+// Scope 表示签名的作用域类型。
 type Scope string
 
+// Scope constants for signature.
+// 签名作用域常量。
 const (
+	// ScopeDefault is the default scope for general API calls.
+	// ScopeDefault 是一般 API 调用的默认作用域。
 	ScopeDefault Scope = ""
-	ScopeSystem  Scope = "license"
+	// ScopeSystem is the scope for system/license API calls.
+	// ScopeSystem 是系统/许可证 API 调用的作用域。
+	ScopeSystem Scope = "license"
 )
 
+// API endpoint constants.
+// API 端点常量。
 const (
-	ApiBase           = "/sdk/v2"
-	ApiIframeAssets   = "/sdk/v2/shimo-assets/static-uploader/sdk-iframe-assets.json"
-	ApiAiAssets       = "/sdk/v2/api/assets"
+	// ApiBase is the base path for SDK API.
+	// ApiBase 是 SDK API 的基础路径。
+	ApiBase = "/sdk/v2"
+	// ApiIframeAssets is the endpoint for iframe assets.
+	// ApiIframeAssets 是 iframe 资源的端点。
+	ApiIframeAssets = "/sdk/v2/shimo-assets/static-uploader/sdk-iframe-assets.json"
+	// ApiAiAssets is the endpoint for AI assets.
+	// ApiAiAssets 是 AI 资源的端点。
+	ApiAiAssets = "/sdk/v2/api/assets"
+	// ApiCloudFilesPage is the endpoint template for cloud files page.
+	// ApiCloudFilesPage 是云文件页面的端点模板。
 	ApiCloudFilesPage = "/sdk/v2/api/cloud-files/%s/page"
 )
 
-// Metadata contains authentication information.
-// Metadata 包含认证信息。
+// Metadata contains authentication information for API requests.
+// Metadata 包含 API 请求的认证信息。
 type Metadata struct {
-	// ShimoToken token. 令牌。
+	// ShimoToken is the authentication token for Shimo API.
+	// ShimoToken 是石墨 API 的认证令牌。
 	ShimoToken string
-	// WebofficeToken token, new shimo token
+	// WebofficeToken is the new Shimo token for weboffice.
+	// WebofficeToken 是 weboffice 的新石墨令牌。
 	WebofficeToken string
-	// User's unique identifier. 用户 UUID。
+	// WebofficeUserUuid is the user's unique identifier.
+	// WebofficeUserUuid 是用户的唯一标识符。
 	WebofficeUserUuid string
 }
 
@@ -161,25 +186,41 @@ func (ac *APIConf) Request(reqHandlers ...ReqHandler) *APIConf {
 	return ac
 }
 
+// apiRes is the interface for API response handling.
+// apiRes 是 API 响应处理的接口。
 type apiRes interface {
+	// SetResponse sets the raw HTTP response.
+	// SetResponse 设置原始 HTTP 响应。
 	SetResponse(resp *resty.Response)
+	// Response returns the raw HTTP response.
+	// Response 返回原始 HTTP 响应。
 	Response() *resty.Response
 }
 
+// rawRes is the base struct for API responses containing the raw HTTP response.
+// rawRes 是包含原始 HTTP 响应的 API 响应基础结构体。
 type rawRes struct {
 	res *resty.Response
 }
 
+// Response returns the raw HTTP response.
+// Response 返回原始 HTTP 响应。
 func (r *rawRes) Response() *resty.Response {
 	return r.res
 }
 
+// SetResponse sets the raw HTTP response.
+// SetResponse 设置原始 HTTP 响应。
 func (r *rawRes) SetResponse(res *resty.Response) {
 	r.res = res
 }
 
+// ReqHandler is a function type for customizing HTTP requests.
+// ReqHandler 是用于自定义 HTTP 请求的函数类型。
 type ReqHandler func(req *resty.Request)
 
+// Invoke executes the API request and populates the response.
+// Invoke 执行 API 请求并填充响应。
 func (ac *APIConf) Invoke(ctx context.Context, res apiRes) (err error) {
 	var r *resty.Response
 	defer func() {
@@ -197,11 +238,15 @@ func (ac *APIConf) Invoke(ctx context.Context, res apiRes) (err error) {
 	return err
 }
 
+// SetResult sets the result destination for the API response.
+// SetResult 设置 API 响应的结果目标。
 func (ac *APIConf) SetResult(res interface{}) *APIConf {
 	ac.req.SetResult(res)
 	return ac
 }
 
+// SetFileReader sets a file reader for multipart form file upload.
+// SetFileReader 设置用于多部分表单文件上传的文件读取器。
 func (ac *APIConf) SetFileReader(param, fileName string, reader interface{}) *APIConf {
 	if r, ok := reader.(interface{ Read([]byte) (int, error) }); ok {
 		ac.req.SetFileReader(param, fileName, r)
@@ -209,6 +254,8 @@ func (ac *APIConf) SetFileReader(param, fileName string, reader interface{}) *AP
 	return ac
 }
 
+// Send executes the API request and returns the raw HTTP response.
+// Send 执行 API 请求并返回原始 HTTP 响应。
 func (ac *APIConf) Send(ctx context.Context) (*resty.Response, error) {
 	rawResponse, err := ac.req.SetContext(ctx).Send()
 	if err != nil {

@@ -7,23 +7,35 @@ import (
 	"github.com/gotomicro/ego/client/ehttp"
 )
 
-// 获取表格内容
-// https://open.shimo.im/docs/06API-document/interface-description/collaborative-editing#get-table-content
-
+// GetTableContentReq contains parameters for getting table content.
+// GetTableContentReq 包含获取表格内容的参数。
+// API Doc: https://open.shimo.im/docs/06API-document/interface-description/collaborative-editing#get-table-content
 type GetTableContentReq struct {
 	Metadata
+	// FileID is the unique identifier of the file.
+	// FileID 是文件的唯一标识符。
 	FileID string
-	Rg     string
+	// Rg is the range of cells to retrieve (e.g., "Sheet1!A1:C3").
+	// Rg 是要获取的单元格范围（例如："Sheet1!A1:C3"）。
+	Rg string
 }
 
+// GetTableContentRes contains the response for getting table content.
+// GetTableContentRes 包含获取表格内容的响应。
 type GetTableContentRes struct {
 	rawRes
+	// Values is the 2D array of cell values.
+	// Values 是单元格值的二维数组。
 	Values [][]interface{} `json:"values"`
-	Lag    int             `json:"lag"`
+	// Lag is the lag value.
+	// Lag 是延迟值。
+	Lag int `json:"lag"`
 }
 
+// NewGetTableContentApi creates a new API config for getting table content.
+// NewGetTableContentApi 创建用于获取表格内容的 API 配置。
 func NewGetTableContentApi(cli *ehttp.Component, ss SignatureSigner, params GetTableContentReq) *APIConf {
-	sign := ss.Sign(expire4m, ScopeDefault)
+	sign := ss.Sign(ExpireLong, ScopeDefault)
 	extra := map[string]string{
 		"Content-Type": "application/json",
 	}

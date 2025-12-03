@@ -7,22 +7,32 @@ import (
 	"github.com/gotomicro/ego/client/ehttp"
 )
 
-// 创建预览
-// https://open.shimo.im/docs/06API-document/interface-description/file-operation#%E5%88%9B%E5%BB%BA%E9%A2%84%E8%A7%88
-
+// CreatePreviewReq contains parameters for creating a file preview.
+// CreatePreviewReq 包含创建文件预览的参数。
+// API Doc: https://open.shimo.im/docs/06API-document/interface-description/file-operation#%E5%88%9B%E5%BB%BA%E9%A2%84%E8%A7%88
 type CreatePreviewReq struct {
 	Metadata
+	// FileID is the unique identifier of the file.
+	// FileID 是文件的唯一标识符。
 	FileID string
 }
 
+// CreatePreviewRes contains the response for creating a file preview.
+// CreatePreviewRes 包含创建文件预览的响应。
 type CreatePreviewRes struct {
 	rawRes
-	Code    string `json:"code"`    // 创建预览结果状态码，空字符串代表创建成功， 非空代表创建失败
-	Message string `json:"message"` // 创建失败错误信息
+	// Code is the result status code (empty string means success).
+	// Code 是结果状态码（空字符串表示成功）。
+	Code string `json:"code"`
+	// Message is the error message when creation fails.
+	// Message 是创建失败时的错误信息。
+	Message string `json:"message"`
 }
 
+// NewCreatePreviewApi creates a new API config for creating a file preview.
+// NewCreatePreviewApi 创建用于创建文件预览的 API 配置。
 func NewCreatePreviewApi(cli *ehttp.Component, ss SignatureSigner, params CreatePreviewReq) *APIConf {
-	sign := ss.Sign(expire4m, ScopeDefault)
+	sign := ss.Sign(ExpireLong, ScopeDefault)
 	return &APIConf{
 		ss:     ss,
 		Client: cli,
