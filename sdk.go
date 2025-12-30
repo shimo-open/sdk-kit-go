@@ -370,7 +370,7 @@ func (m *Manager) GetImportProgress(ctx context.Context, req api.GetImportProgRe
 func (m *Manager) ImportV2File(ctx context.Context, req api.ImportFileReq) (res api.ImportFileRes, err error) {
 	rh := func(r *resty.Request) {
 		if req.File != nil {
-			r.SetFileReader("ImportV2File file", filepath.Base(req.File.Name()), req.File)
+			r.SetFileReader("file", filepath.Base(req.File.Name()), req.File)
 		}
 	}
 	err = api.NewImportV2FileApi(m.httpClient, m.ss, req).Request(rh).Invoke(ctx, &res)
