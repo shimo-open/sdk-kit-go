@@ -23,8 +23,8 @@ type AppendTableContentReq struct {
 type AppendTableContentReqBody struct {
 	// Rg is the range of cells to append (e.g., "Sheet1!A1:C3").
 	// Rg 是要追加的单元格范围（例如："Sheet1!A1:C3"）。
-	Rg string `json:"range"`
-	Resource
+	Rg       string   `json:"range"`
+	Resource Resource `json:"resource"` // 应该有 json tag
 }
 
 // Resource contains the values to append to the table.
