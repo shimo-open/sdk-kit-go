@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -24,6 +25,18 @@ type GetUserAndStatusReq struct {
 // GetUserAndStatusRes 包含获取用户列表和席位状态的响应。
 type GetUserAndStatusRes struct {
 	rawRes
+	Users []UserStatus `json:"-"`
+}
+
+// UnmarshalJSON implements json.Unmarshaler interface.
+// The API returns an array directly, so we need custom unmarshaling.
+// UnmarshalJSON 实现 json.Unmarshaler 接口。
+// API 直接返回数组，因此需要自定义反序列化。
+func (r *GetUserAndStatusRes) UnmarshalJSON(data []byte) error {
+	return json.Unmarshal(data, &r.Users)
+}
+
+type UserStatus struct {
 	// UserId is the user ID.
 	// UserId 是用户 ID。
 	UserId string `json:"userId"`
