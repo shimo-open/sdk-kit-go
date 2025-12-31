@@ -368,12 +368,7 @@ func (m *Manager) GetImportProgress(ctx context.Context, req api.GetImportProgRe
 // ImportV2File imports a file using v2 API.
 // ImportV2File 使用 v2 接口导入文件。
 func (m *Manager) ImportV2File(ctx context.Context, req api.ImportFileReq) (res api.ImportFileRes, err error) {
-	rh := func(r *resty.Request) {
-		if req.File != nil {
-			r.SetFileReader("file", filepath.Base(req.File.Name()), req.File)
-		}
-	}
-	err = api.NewImportV2FileApi(m.httpClient, m.ss, req).Request(rh).Invoke(ctx, &res)
+	err = api.NewImportV2FileApi(m.httpClient, m.ss, req).Request().Invoke(ctx, &res)
 	if err != nil {
 		return res, fmt.Errorf("import v2 file request failed: %w", err)
 	}
