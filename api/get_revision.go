@@ -22,7 +22,7 @@ type GetRevisionListReq struct {
 type GetRevisionListRes struct {
 	// Revisions is the list of revision entries.
 	// Revisions 是版本条目列表。
-	Revisions []GetRevisionListRes `json:"revisions"`
+	Revisions []GetRevisionListRevision `json:"revisions"`
 	rawRes
 }
 

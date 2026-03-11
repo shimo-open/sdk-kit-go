@@ -108,7 +108,7 @@ func (m *Manager) GetHistoryList(ctx context.Context, req api.GetHistoryListReq)
 // GetRevisionList retrieves the revision list of a document.
 // GetRevisionList 获取版本列表。
 func (m *Manager) GetRevisionList(ctx context.Context, req api.GetRevisionListReq) (res api.GetRevisionListRes, err error) {
-	var revisions []api.GetRevisionListRes
+	var revisions []api.GetRevisionListRevision
 	rawRes, err := api.NewGetRevisionListApi(m.httpClient, m.ss, req).Request().SetResult(&revisions).Send(ctx)
 	r := api.GetRevisionListRes{Revisions: revisions}
 	r.SetResponse(rawRes)
