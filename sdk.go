@@ -46,6 +46,12 @@ func WithAppSecret(appSecret string) Option {
 	}
 }
 
+func WithReplaceMoSymbol(v bool) Option {
+	return func(m *Manager) {
+		api.SetReplaceMoSymbol(v)
+	}
+}
+
 // NewManager creates a new SDK manager instance with the given configuration.
 // NewManager 使用给定配置创建新的 SDK 管理器实例。
 func NewManager(options ...Option) *Manager {

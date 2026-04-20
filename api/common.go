@@ -10,24 +10,55 @@ import (
 )
 
 const (
-	// HeaderShimoToken is the header name for authentication token
-	HeaderShimoToken = "X-Shimo-Token"
-	// HeaderShimoSignature is the header name for request signature
-	HeaderShimoSignature = "X-Shimo-Signature"
-	// HeaderShimoCredentialType is the header name for credential type
+	HeaderShimoToken          = "X-Shimo-Token"
+	HeaderShimoSignature      = "X-Shimo-Signature"
 	HeaderShimoCredentialType = "X-Shimo-Credential-Type"
-	// HeaderShimoSdkEvent is the header name for SDK events
-	HeaderShimoSdkEvent = "X-Shimo-Sdk-Event"
-	// HeaderWebofficeToken is the new shimo token
-	HeaderWebofficeToken = "X-Weboffice-Token"
-	// HeaderWebofficeUserUuid controller user info cache
-	HeaderWebofficeUserUuid = "X-Weboffice-User-Uuid"
+	HeaderShimoSdkEvent       = "X-Shimo-Sdk-Event"
 
-	// Anonymous is the user ID for anonymous users
-	Anonymous = -1
-	// AnonymousToken is the token used for anonymous users
+	HeaderWebofficeToken          = "X-Weboffice-Token"
+	HeaderWebofficeSignature      = "X-Weboffice-Signature"
+	HeaderWebofficeCredentialType = "X-Weboffice-Credential-Type"
+	HeaderWebofficeSdkEvent       = "X-Weboffice-Sdk-Event"
+	HeaderWebofficeUserUuid       = "X-Weboffice-User-Uuid"
+
+	Anonymous      = -1
 	AnonymousToken = "pseudonymoustoken"
 )
+
+var replaceMoSymbol bool
+
+// SetReplaceMoSymbol controls whether to use X-Weboffice-* headers instead of X-Shimo-*.
+func SetReplaceMoSymbol(v bool) {
+	replaceMoSymbol = v
+}
+
+func GetTokenHeader() string {
+	if replaceMoSymbol {
+		return HeaderWebofficeToken
+	}
+	return HeaderShimoToken
+}
+
+func GetSignatureHeader() string {
+	if replaceMoSymbol {
+		return HeaderWebofficeSignature
+	}
+	return HeaderShimoSignature
+}
+
+func GetCredentialTypeHeader() string {
+	if replaceMoSymbol {
+		return HeaderWebofficeCredentialType
+	}
+	return HeaderShimoCredentialType
+}
+
+func GetSdkEventHeader() string {
+	if replaceMoSymbol {
+		return HeaderWebofficeSdkEvent
+	}
+	return HeaderShimoSdkEvent
+}
 
 // Expiration duration constants for signature.
 // 签名过期时间常量。
@@ -86,20 +117,21 @@ type Metadata struct {
 	WebofficeUserUuid string
 }
 
-// addHeaders builds HTTP request headers from auth and extra parameters.
-// addHeaders 从认证信息和额外参数构建 HTTP 请求头。
 func addHeaders(md Metadata, sig string, extraHeaders map[string]string) map[string][]string {
 	if md.WebofficeToken == "" {
 		md.WebofficeToken = md.ShimoToken
 	}
-	// 基础 header
-	params := map[string][]string{
-		HeaderShimoSignature:    {sig},
-		HeaderShimoToken:        {md.ShimoToken},
-		HeaderWebofficeToken:    {md.WebofficeToken},
-		HeaderWebofficeUserUuid: {md.WebofficeUserUuid},
+	params := make(map[string][]string)
+	if replaceMoSymbol {
+		params[HeaderWebofficeSignature] = []string{sig}
+		params[HeaderWebofficeToken] = []string{md.WebofficeToken}
+		params[HeaderWebofficeUserUuid] = []string{md.WebofficeUserUuid}
+	} else {
+		params[HeaderShimoSignature] = []string{sig}
+		params[HeaderShimoToken] = []string{md.ShimoToken}
+		params[HeaderWebofficeToken] = []string{md.WebofficeToken}
+		params[HeaderWebofficeUserUuid] = []string{md.WebofficeUserUuid}
 	}
-	// 添加额外 header
 	for k, v := range extraHeaders {
 		params[k] = []string{v}
 	}
