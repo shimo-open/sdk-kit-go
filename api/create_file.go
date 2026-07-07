@@ -22,6 +22,9 @@ type CreateFileReq struct {
 	// ContentKey is the key for file content (optional).
 	// ContentKey 是文件内容的键（可选）。
 	ContentKey string
+	// Extend contains extra creation options (optional).
+	// Extend 包含创建文件的额外选项（可选）。
+	Extend map[string]string
 }
 
 // CreateFileRes contains the response for creating a file.
@@ -42,6 +45,9 @@ type CreateFileRequestBody struct {
 	// ContentKey is the key for file content.
 	// ContentKey 是文件内容的键。
 	ContentKey string `json:"contentKey"`
+	// Extend contains extra creation options.
+	// Extend 包含创建文件的额外选项。
+	Extend map[string]string `json:"extend,omitempty"`
 }
 
 // NewCreateFileApi creates a new API config for creating a file.
@@ -64,6 +70,7 @@ func NewCreateFileApi(cli *ehttp.Component, ss SignatureSigner, params CreateFil
 				Type:       params.FileType,
 				FileID:     params.FileID,
 				ContentKey: params.ContentKey,
+				Extend:     params.Extend,
 			},
 		},
 		ResParams: APIResParams{
