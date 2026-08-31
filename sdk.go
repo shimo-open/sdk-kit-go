@@ -169,6 +169,110 @@ func (m *Manager) GetCommentCount(ctx context.Context, req api.GetCommentCountRe
 	return res, nil
 }
 
+// GetMarkdownContent retrieves the Markdown content of a lightweight document.
+// GetMarkdownContent 获取轻文档的 Markdown 内容。
+func (m *Manager) GetMarkdownContent(ctx context.Context, req api.GetMarkdownContentReq) (res api.GetMarkdownContentRes, err error) {
+	err = api.NewGetMarkdownContentApi(m.httpClient, m.ss, req).Request().Invoke(ctx, &res)
+	if err != nil {
+		return res, fmt.Errorf("get markdown content request failed: %w", err)
+	}
+	return
+}
+
+// AppendMarkdownContent appends Markdown content to a lightweight document.
+// AppendMarkdownContent 在轻文档末尾追加 Markdown 内容。
+func (m *Manager) AppendMarkdownContent(ctx context.Context, req api.AppendMarkdownContentReq) (res api.AppendMarkdownContentRes, err error) {
+	err = api.NewAppendMarkdownContentApi(m.httpClient, m.ss, req).Request().Invoke(ctx, &res)
+	if err != nil {
+		return res, fmt.Errorf("append markdown content request failed: %w", err)
+	}
+	return
+}
+
+// GetTableLocks retrieves worksheet and cell-range lock information.
+// GetTableLocks 获取工作表和单元格区域的锁定信息。
+func (m *Manager) GetTableLocks(ctx context.Context, req api.GetTableLocksReq) (res api.GetTableLocksRes, err error) {
+	var locks []api.TableSheetLock
+	rawRes, err := api.NewGetTableLocksApi(m.httpClient, m.ss, req).Request().SetResult(&locks).Send(ctx)
+	res.Locks = locks
+	res.SetResponse(rawRes)
+	if err != nil {
+		return res, fmt.Errorf("get table locks request failed: %w", err)
+	}
+
+	return res, nil
+}
+
+// JudgeTableLocked checks whether a spreadsheet is locked.
+// JudgeTableLocked 判断表格是否处于锁定状态。
+func (m *Manager) JudgeTableLocked(ctx context.Context, req api.JudgeTableLockedReq) (res api.JudgeTableLockedRes, err error) {
+	err = api.NewJudgeTableLockedApi(m.httpClient, m.ss, req).Request().Invoke(ctx, &res)
+	if err != nil {
+		return res, fmt.Errorf("judge table locked request failed: %w", err)
+	}
+	return
+}
+
+// MergeCells merges a range of spreadsheet cells.
+// MergeCells 合并表格单元格区域。
+func (m *Manager) MergeCells(ctx context.Context, req api.MergeCellsReq) (res api.MergeCellsRes, err error) {
+	err = api.NewMergeCellsApi(m.httpClient, m.ss, req).Request().Invoke(ctx, &res)
+	if err != nil {
+		return res, fmt.Errorf("merge cells request failed: %w", err)
+	}
+	return
+}
+
+// SetCellAttrs updates attributes for a spreadsheet cell range.
+// SetCellAttrs 设置表格单元格区域属性。
+func (m *Manager) SetCellAttrs(ctx context.Context, req api.SetCellAttrsReq) (res api.SetCellAttrsRes, err error) {
+	err = api.NewSetCellAttrsApi(m.httpClient, m.ss, req).Request().Invoke(ctx, &res)
+	if err != nil {
+		return res, fmt.Errorf("set cell attrs request failed: %w", err)
+	}
+	return
+}
+
+// UploadCellImage uploads an image to a spreadsheet cell.
+// UploadCellImage 上传表格单元格图片。
+func (m *Manager) UploadCellImage(ctx context.Context, req api.UploadCellImageReq) (res api.UploadCellImageRes, err error) {
+	err = api.NewUploadCellImageApi(m.httpClient, m.ss, req).Request().Invoke(ctx, &res)
+	if err != nil {
+		return res, fmt.Errorf("upload cell image request failed: %w", err)
+	}
+	return
+}
+
+// GetCellsImage retrieves image URLs for spreadsheet cells.
+// GetCellsImage 获取表格单元格图片地址。
+func (m *Manager) GetCellsImage(ctx context.Context, req api.GetCellsImageReq) (res api.GetCellsImageRes, err error) {
+	err = api.NewGetCellsImageApi(m.httpClient, m.ss, req).Request().Invoke(ctx, &res)
+	if err != nil {
+		return res, fmt.Errorf("get cells image request failed: %w", err)
+	}
+	return
+}
+
+// InsertTableRows inserts consecutive rows into a spreadsheet.
+// InsertTableRows 在表格指定位置插入连续行。
+func (m *Manager) InsertTableRows(ctx context.Context, req api.InsertTableRowsReq) (res api.InsertTableRowsRes, err error) {
+	err = api.NewInsertTableRowsApi(m.httpClient, m.ss, req).Request().Invoke(ctx, &res)
+	if err != nil {
+		return res, fmt.Errorf("insert table rows request failed: %w", err)
+	}
+	return
+}
+
+// GetMentionAtPosition retrieves the position of a spreadsheet mention.
+// GetMentionAtPosition 获取表格 @ 信息所在位置。
+func (m *Manager) GetMentionAtPosition(ctx context.Context, req api.GetMentionAtPositionReq) (res api.GetMentionAtPositionRes, err error) {
+	err = api.NewGetMentionAtPositionApi(m.httpClient, m.ss, req).Request().Invoke(ctx, &res)
+	if err != nil {
+		return res, fmt.Errorf("get mention at position request failed: %w", err)
+	}
+	return
+}
+
 // GetTableContent retrieves the content of a table.
 // GetTableContent 获取表格内容。
 func (m *Manager) GetTableContent(ctx context.Context, req api.GetTableContentReq) (res api.GetTableContentRes, err error) {
